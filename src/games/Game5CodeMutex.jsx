@@ -1,0 +1,156 @@
+import { useState, useEffect, useRef } from 'react'
+import './CodeGame.css'
+
+const BLANKS = {
+  b1: { answer: 'WaitOne(TimeSpan.FromSeconds(5))', hint: 'Използвай timeout, не безкрайно WaitOne()' },
+  b2: { answer: 'TimeoutException', hint: 'При timeout прекъсни вместо да продължиш без mutex' },
+  b3: { answer: 'ReleaseMutex()', hint: 'Задължително във finally — само owner освобождава' },
+}
+
+const LINES = [
+  { t: 's', code: 'static readonly Mutex _mutex = new(false, "Global\\\\SharedCounter");' },
+  { t: 'e' },
+  { t: 's', code: 'void DoWork()' },
+  { t: 's', code: '{' },
+  { t: 'b', pre: '    if (!_mutex.', id: 'b1', post: ')', comment: '// придобий с timeout' },
+  { t: 'b', pre: '        throw new ', id: 'b2', post: '("Mutex timeout");', comment: '// не влизай без lock' },
+  { t: 'e' },
+  { t: 's', code: '    try' },
+  { t: 's', code: '    {' },
+  { t: 's', code: '        sharedCounter += 1;' },
+  { t: 's', code: '        SaveToDisk(sharedCounter);' },
+  { t: 's', code: '    }' },
+  { t: 's', code: '    finally' },
+  { t: 's', code: '    {' },
+  { t: 'b', pre: '        _mutex.', id: 'b3', post: ';', comment: '// owner thread освобождава' },
+  { t: 's', code: '    }' },
+  { t: 's', code: '}' },
+]
+
+const initValues = () => Object.fromEntries(Object.keys(BLANKS).map(k => [k, '']))
+
+function isCorrect(id, val) {
+  const normalize = (v) => v.trim().replace(/\s+/g, '').toLowerCase()
+  return normalize(val) === normalize(BLANKS[id].answer)
+}
+
+export default function Game5CodeMutex() {
+  const [values, setValues] = useState(initValues)
+  const [revealed, setRevealed] = useState(false)
+  const [cheated, setCheated] = useState(false)
+  const firstRef = useRef(null)
+
+  const allDone = Object.keys(BLANKS).every(id => isCorrect(id, values[id]))
+
+  useEffect(() => {
+    firstRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== '`') return
+      e.preventDefault()
+      setValues(Object.fromEntries(Object.keys(BLANKS).map(k => [k, BLANKS[k].answer])))
+      setRevealed(true)
+      setCheated(true)
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  const handleChange = (id, val) => {
+    setValues(prev => ({ ...prev, [id]: val }))
+    setRevealed(false)
+    setCheated(false)
+  }
+
+  const blankState = (id) => {
+    if (isCorrect(id, values[id])) return 'correct'
+    if (revealed && values[id]) return 'wrong'
+    return ''
+  }
+
+  const reset = () => {
+    setValues(initValues)
+    setRevealed(false)
+    setCheated(false)
+    setTimeout(() => firstRef.current?.focus(), 0)
+  }
+
+  let blankCount = 0
+
+  return (
+    <div className="codegame">
+      <div className="tutorial-card">
+        <span className="tutorial-step">C#</span>
+        <div>
+          <div className="tutorial-title">Попълни pattern-а, не само метода.</div>
+          <div className="tutorial-text">Търси три части: timeout при WaitOne, exception при отказ и ReleaseMutex() във finally.</div>
+        </div>
+      </div>
+
+      <p className="cg-desc">
+        Два процеса достъпват общ брояч. Попълни timeout придобиването, грешката при отказ и безопасното освобождаване.
+      </p>
+
+      <div className="cg-editor">
+        <div className="cg-editor-bar">
+          <span className="cg-lang">C#</span>
+          {allDone && (
+            <span className="cg-done-badge">
+              {cheated ? '` използван — запомни отговорите' : 'Правилно!'}
+            </span>
+          )}
+        </div>
+        <div className="cg-code">
+          {LINES.map((line, i) => {
+            if (line.t === 'b') blankCount++
+            const isFirst = line.t === 'b' && blankCount === 1
+            return (
+              <div key={i} className="cg-row">
+                <span className="cg-ln">{i + 1}</span>
+                {line.t === 'e' ? (
+                  <span className="cg-text">&nbsp;</span>
+                ) : line.t === 's' ? (
+                  <span className="cg-text">{line.code}</span>
+                ) : (
+                  <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="cg-text">{line.pre}</span>
+                    <span className={`cg-blank ${blankState(line.id)}`}>
+                      <input
+                        ref={isFirst ? firstRef : null}
+                        className="cg-input"
+                        value={values[line.id]}
+                        onChange={e => handleChange(line.id, e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && setRevealed(true)}
+                        style={{ width: `${Math.max(values[line.id].length + 1, BLANKS[line.id].answer.length + 2)}ch` }}
+                        spellCheck={false}
+                        autoComplete="off"
+                        placeholder="___"
+                      />
+                    </span>
+                    <span className="cg-text">{line.post}</span>
+                    <span className="cg-comment">{line.comment}</span>
+                    {revealed && blankState(line.id) === 'wrong' && (
+                      <span className="cg-hint"> ← {BLANKS[line.id].hint}</span>
+                    )}
+                  </span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="cg-actions">
+        <button className="cg-btn-check" onClick={() => setRevealed(true)} disabled={allDone}>
+          Провери
+        </button>
+        <button className="cg-btn-reset" onClick={reset}>
+          Изчисти
+        </button>
+        <span className="cg-cheat">` — автопопълване</span>
+      </div>
+    </div>
+  )
+}

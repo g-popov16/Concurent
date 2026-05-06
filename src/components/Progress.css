@@ -1,0 +1,48 @@
+.progress-bar {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--surface);
+  border-right: 1px solid var(--border-dim);
+  padding: 12px 0;
+}
+
+.part-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-faint);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.part-marker:hover {
+  color: var(--text-dim);
+  background: var(--surface-raised);
+}
+
+.part-marker.past {
+  color: var(--text-faint);
+  border-color: var(--border-dim);
+}
+
+.part-marker.active {
+  color: var(--part-color, var(--text));
+  background: color-mix(in srgb, var(--part-color) 12%, transparent);
+  border-color: color-mix(in srgb, var(--part-color) 30%, transparent);
+}
+
+.part-roman {
+  pointer-events: none;
+}

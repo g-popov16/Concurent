@@ -1,0 +1,134 @@
+.nav-bar {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: var(--surface);
+  border-top: 1px solid var(--border-dim);
+  height: 48px;
+  gap: 12px;
+  position: relative;
+}
+
+.nav-progress-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border-dim);
+}
+
+.nav-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--manual));
+  transition: width 0.4s var(--ease-out-expo);
+  border-radius: 0 1px 1px 0;
+}
+
+.nav-left, .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-dim);
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-arrow:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--surface-raised);
+}
+
+.nav-arrow:disabled {
+  opacity: 0.2;
+  cursor: default;
+}
+
+.nav-counter {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  display: flex;
+  gap: 2px;
+  min-width: 44px;
+  justify-content: center;
+}
+
+.nav-current { color: var(--text); font-size: 12px; }
+.nav-sep     { color: var(--text-faint); }
+
+.nav-dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  max-width: 200px;
+  overflow: hidden;
+}
+
+.nav-dot {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.nav-dot.past   { background: var(--text-faint); }
+.nav-dot.active { background: var(--text); transform: scale(1.6); }
+
+.nav-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-faint);
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-icon-btn:hover {
+  color: var(--text-dim);
+  background: var(--surface-raised);
+}
+
+.nav-icon-btn.active-notes {
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.nav-icon-btn.active-plan {
+  color: var(--manual);
+  background: var(--manual-dim);
+}
+
+.nav-key {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: inherit;
+}
