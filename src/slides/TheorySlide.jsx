@@ -106,6 +106,23 @@ function Section({ section }) {
         </div>
       )
 
+    case 'signal-states':
+      return (
+        <div className="signal-states">
+          {section.states.map((s, i) => (
+            <div key={i} className="signal-state" style={{ '--state-color': s.color }}>
+              <div className="signal-state-header">
+                <div className="signal-dot" />
+                <span className="signal-name">{s.name}</span>
+                <span className="signal-subtitle">{s.subtitle}</span>
+              </div>
+              <div className="signal-metaphor">{s.metaphor}</div>
+              <p className="signal-desc">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      )
+
     case 'pitfall-list':
       return (
         <div className="pitfall-list">

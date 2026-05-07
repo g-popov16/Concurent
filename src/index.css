@@ -33,6 +33,10 @@
   --accent-dim: rgba(88,213,255,0.14);
   --accent-glow: rgba(88,213,255,0.24);
 
+  --semaphore: #b57bee;
+  --semaphore-dim: rgba(181,123,238,0.12);
+  --semaphore-glow: rgba(181,123,238,0.25);
+
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Outfit', 'Aptos', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;

@@ -76,9 +76,10 @@
   }
 }
 
-.takeaway.mutex  { border-left: 3px solid var(--mutex); }
-.takeaway.auto   { border-left: 3px solid var(--auto); }
-.takeaway.manual { border-left: 3px solid var(--manual); }
+.takeaway.mutex      { border-left: 3px solid var(--mutex); }
+.takeaway.semaphore  { border-left: 3px solid var(--semaphore); }
+.takeaway.auto       { border-left: 3px solid var(--auto); }
+.takeaway.manual     { border-left: 3px solid var(--manual); }
 
 .takeaway-num {
   font-family: var(--font-mono);
