@@ -211,10 +211,13 @@ export default function TheorySlide({ slide }) {
           <span className="theory-rule" />
         </div>
         <h2 className="theory-title">{slide.title}</h2>
+        <div className="theory-slide-num" aria-hidden="true">
+          {String(slide.id).padStart(2, '0')}
+        </div>
       </div>
       <div className="theory-body">
         {slide.sections?.map((s, i) => (
-          <div key={i} className="theory-section" style={{ '--si': i }}>
+          <div key={i} className={`theory-section ts-${s.type}`} style={{ '--si': i }}>
             <Section section={s} />
           </div>
         ))}
