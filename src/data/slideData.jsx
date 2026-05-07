@@ -12,11 +12,11 @@ import Quiz from '../quiz/Quiz.jsx'
 
 export const parts = [
   { id: 'I',   title: 'Основи',               color: '#7c6af5', range: [0, 5]   },
-  { id: 'II',  title: 'WaitHandle',            color: '#5ba4f5', range: [6, 8]   },
-  { id: 'III', title: 'Mutex',                 color: '#e8622a', range: [9, 15]  },
-  { id: 'IV',  title: 'EventWaitHandle',       color: '#c9922a', range: [16, 23] },
-  { id: 'V',   title: 'Сравнение',             color: '#3ec88a', range: [24, 28] },
-  { id: 'VI',  title: 'Заключение',            color: '#8a8795', range: [29, 30] },
+  { id: 'II',  title: 'WaitHandle',            color: '#5ba4f5', range: [6, 10]  },
+  { id: 'III', title: 'Mutex & Semaphore',     color: '#e8622a', range: [11, 19] },
+  { id: 'IV',  title: 'EventWaitHandle',       color: '#c9922a', range: [20, 27] },
+  { id: 'V',   title: 'Сравнение',             color: '#3ec88a', range: [28, 32] },
+  { id: 'VI',  title: 'Заключение',            color: '#8a8795', range: [33, 34] },
 ]
 
 export const slides = [
@@ -28,7 +28,7 @@ export const slides = [
     subtitle: 'WaitHandle и неговите наследници',
     authors: ['Георги Попов', 'Ивайло Киров'],
     klass: '11д клас, ПМГ „Константин Величков"',
-    speakerNotes: 'Добре дошли. Днешната тема е kernel-level синхронизация в C# — класовете Mutex, AutoResetEvent и ManualResetEvent. Ще разгледаме теория, ще пишем код и ще играем четири игри.',
+    speakerNotes: 'Добре дошли. Днешната тема е kernel-level синхронизация в C# — класовете Mutex, Semaphore, AutoResetEvent и ManualResetEvent. Ще разгледаме теория, ще пишем код и ще играем четири игри.',
   },
 
   {
@@ -133,7 +133,7 @@ export const slides = [
     id: 6, type: 'interactive', part: 'I',
     title: 'Йерархия на класовете',
     component: InheritanceTree,
-    speakerNotes: 'Тази диаграма ще се появява пак в края. WaitHandle е абстрактен базов клас. Mutex и EventWaitHandle са преки наследници. AutoResetEvent и ManualResetEvent наследяват EventWaitHandle.',
+    speakerNotes: 'Тази диаграма ще се появява пак в края. WaitHandle е абстрактен базов клас. Mutex и Semaphore са преки наследници заедно с EventWaitHandle. AutoResetEvent и ManualResetEvent наследяват EventWaitHandle.',
   },
 
   // ─── Part II ───────────────────────────────────────────────────────────────
@@ -160,7 +160,7 @@ public abstract class WaitHandle : IDisposable
     public virtual bool WaitOne(int millisecondsTimeout);
     public virtual bool WaitOne(TimeSpan timeout);
 
-    // Изчакват МАСИВ от handles (статични)
+    // Изчакват МАСИВ от handles (статични — уникални за WaitHandle)
     public static bool    WaitAll(WaitHandle[] waitHandles);
     public static int     WaitAny(WaitHandle[] waitHandles);
 
@@ -178,6 +178,45 @@ public abstract class WaitHandle : IDisposable
 
   {
     id: 8, type: 'theory', part: 'II',
+    title: 'Сигнализиран vs Несигнализиран',
+    sections: [
+      {
+        type: 'text',
+        text: 'Всеки WaitHandle е в едно от двете основни състояния. Именно те определят дали WaitOne() блокира извикващия thread или го пропуска незабавно.'
+      },
+      {
+        type: 'signal-states',
+        states: [
+          {
+            name: 'Несигнализиран',
+            subtitle: '(non-signaled)',
+            color: '#e8622a',
+            metaphor: 'Заключена порта · затворен турникет',
+            desc: 'WaitOne() блокира thread-а. Той чака в опашка без да консумира CPU — докато друг thread промени състоянието.',
+          },
+          {
+            name: 'Сигнализиран',
+            subtitle: '(signaled)',
+            color: '#3ec88a',
+            metaphor: 'Отворена порта · зелена светлина',
+            desc: 'WaitOne() се връща незабавно. Thread-ът преминава и продължава изпълнението си.',
+          },
+        ],
+      },
+      {
+        type: 'list',
+        items: [
+          'EventWaitHandle: Set() → сигнализиран, Reset() → несигнализиран',
+          'Mutex: ReleaseMutex() → сигнализиран (свободен), WaitOne() → несигнализиран (зает)',
+          'Semaphore: Release() → брояч++, WaitOne() → брояч-- (блокира при 0)',
+        ],
+      },
+    ],
+    speakerNotes: 'Двете състояния са ключовият concept. Независимо от типа — Mutex, Semaphore, AutoResetEvent, ManualResetEvent — всичко се свежда до "отворено/затворено". Аналогията с вратата помага на учениците да запомнят кое се случва при WaitOne().',
+  },
+
+  {
+    id: 9, type: 'theory', part: 'II',
     title: 'Ключови методи',
     sections: [
       {
@@ -191,7 +230,7 @@ public abstract class WaitHandle : IDisposable
           {
             name: 'WaitAll(WaitHandle[])',
             desc: 'Блокира докато ВСИЧКИ handles в масива не станат сигнализирани. Подходящ за "изчакай всички задачи".',
-            note: 'Не работи с повтарящи се handles в масива.'
+            note: 'Не работи с повтарящи се handles в масива. Ограничен до 64 handles на Windows.'
           },
           {
             name: 'WaitAny(WaitHandle[])',
@@ -215,7 +254,38 @@ public abstract class WaitHandle : IDisposable
   },
 
   {
-    id: 9, type: 'game', part: 'II',
+    id: 10, type: 'theory', part: 'II',
+    title: 'WaitAll и WaitAny',
+    sections: [
+      {
+        type: 'text',
+        text: 'WaitAll и WaitAny са статични методи — уникалното допълнение на WaitHandle, което не съществува при lock. Позволяват едновременно наблюдение на масив от handles.'
+      },
+      {
+        type: 'code',
+        lang: 'csharp',
+        code: `var handles = new WaitHandle[] { taskA, taskB, taskC };
+
+// WaitAny — събужда се при ПОНЕ ЕДИН сигнализиран handle
+int idx = WaitHandle.WaitAny(handles);
+// idx = 0, 1 или 2 — индексът е недетерминиран при равновременно
+Console.WriteLine($"Задача {idx} завърши пръва.");
+
+// WaitAll — чака ВСИЧКИ handles да са сигнализирани
+bool ok = WaitHandle.WaitAll(handles, TimeSpan.FromSeconds(10));
+if (!ok) Console.WriteLine("Timeout — не всички завършиха навреме.");`,
+      },
+      {
+        type: 'callout',
+        label: 'Ограничение',
+        text: 'WaitAll е ограничен до 64 handle-а на Windows. При повече задачи използвай Task.WhenAll() или CountdownEvent. WaitAll с Mutex в масива може да хвърли DuplicateWaitObjectException ако извикващият thread вече притежава един от тях.',
+      },
+    ],
+    speakerNotes: 'WaitAny е полезен в "race to completion" сценарии — кой worker завърши пръв. WaitAll е за barrier synchronization — изчакай всички да са готови. Разграничението между двата метода е ключово за играта, която следва.',
+  },
+
+  {
+    id: 11, type: 'game', part: 'II',
     title: 'Игра 1 — WaitAny vs WaitAll',
     component: Game1,
     speakerNotes: 'Нека учениците опитат двата режима. WaitAny се събужда при първата лампа — WaitAll чака всички четири. Ключова разлика за producer-consumer сценарии.',
@@ -224,7 +294,7 @@ public abstract class WaitHandle : IDisposable
   // ─── Part III ──────────────────────────────────────────────────────────────
 
   {
-    id: 10, type: 'theory', part: 'III',
+    id: 12, type: 'theory', part: 'III',
     title: 'Mutex — въведение',
     sections: [
       {
@@ -250,7 +320,52 @@ public abstract class WaitHandle : IDisposable
   },
 
   {
-    id: 11, type: 'theory', part: 'III',
+    id: 13, type: 'theory', part: 'III',
+    title: 'Semaphore',
+    sections: [
+      {
+        type: 'text',
+        text: 'Semaphore е WaitHandle наследник, подобен на Mutex, но с важна разлика: позволява до N thread-а едновременно. Mutex е частен случай на Semaphore с N = 1.',
+      },
+      {
+        type: 'highlight-box',
+        accent: 'semaphore',
+        title: 'Брояч, не ownership',
+        text: 'Semaphore поддържа вътрешен брояч (0..N). WaitOne() намалява брояча — блокира при 0. Release() го увеличава. Всеки thread може да извика Release() — без thread affinity, за разлика от Mutex.',
+      },
+      {
+        type: 'code',
+        lang: 'csharp',
+        code: `// Максимум 3 thread-а достъпват ресурса едновременно
+var sem = new Semaphore(
+    initialCount: 3,   // стартов брояч
+    maximumCount: 3    // таван
+);
+
+// Cross-process: именуван Semaphore
+var named = new Semaphore(3, 3, "Global\\\\MaxConnections");
+
+sem.WaitOne();          // брояч-- (блокира при 0)
+try
+{
+    AccessLimitedResource();
+}
+finally
+{
+    sem.Release();      // брояч++ (може да е от ДРУГ thread)
+}`,
+      },
+      {
+        type: 'callout',
+        label: 'SemaphoreSlim за in-process',
+        text: 'Предпочитай SemaphoreSlim — по-бърз (user space), поддържа async/await с WaitAsync(), но без cross-process именуване. Избирай Semaphore само при нужда от kernel-level видимост.',
+      },
+    ],
+    speakerNotes: 'Semaphore е между Mutex (1 thread) и отсъствие на синхронизация (всички threads). Типичен пример: connection pool с максимум 10 едновременни DB заявки. SemaphoreSlim е правилният избор за async код.',
+  },
+
+  {
+    id: 14, type: 'theory', part: 'III',
     title: 'Кога се използва Mutex?',
     sections: [
       {
@@ -287,7 +402,7 @@ public abstract class WaitHandle : IDisposable
   },
 
   {
-    id: 12, type: 'theory', part: 'III',
+    id: 15, type: 'theory', part: 'III',
     title: 'Mutex — основна употреба',
     sections: [
       {
@@ -328,14 +443,14 @@ finally
   },
 
   {
-    id: 13, type: 'game', part: 'III',
+    id: 16, type: 'game', part: 'III',
     title: 'Игра 2 — Ключът от тоалетната',
     component: Game2,
     speakerNotes: 'Само един thread може да държи ключа. Грешното освобождаване от друг thread трябва да покаже ApplicationException. Накарайте учениците да опитат да освободят от грешния thread.',
   },
 
   {
-    id: 14, type: 'theory', part: 'III',
+    id: 17, type: 'theory', part: 'III',
     title: 'Named Mutex',
     sections: [
       {
@@ -376,7 +491,7 @@ Application.Run(new MainForm());`,
   },
 
   {
-    id: 15, type: 'theory', part: 'III',
+    id: 18, type: 'theory', part: 'III',
     title: 'Капани при Mutex',
     sections: [
       {
@@ -412,7 +527,7 @@ mtxB.WaitOne();`,
   },
 
   {
-    id: 16, type: 'codegame', part: 'III',
+    id: 19, type: 'codegame', part: 'III',
     title: 'Предизвикателство — напиши Mutex',
     component: Game5,
     speakerNotes: 'Дайте 3-4 минути на учениците да попълнят кода сами. Кой финишира без ` е истинският победител. Припомнете: без finally блока мютексът може да остане заключен завинаги.',
@@ -421,7 +536,7 @@ mtxB.WaitOne();`,
   // ─── Part IV ───────────────────────────────────────────────────────────────
 
   {
-    id: 17, type: 'theory', part: 'IV',
+    id: 20, type: 'theory', part: 'IV',
     title: 'EventWaitHandle',
     sections: [
       {
@@ -458,7 +573,7 @@ var existing = EventWaitHandle.OpenExisting("Global\\\\MyEvent");`,
   },
 
   {
-    id: 18, type: 'theory', part: 'IV',
+    id: 21, type: 'theory', part: 'IV',
     title: 'AutoResetEvent — въведение',
     sections: [
       {
@@ -488,7 +603,7 @@ var existing = EventWaitHandle.OpenExisting("Global\\\\MyEvent");`,
   },
 
   {
-    id: 19, type: 'theory', part: 'IV',
+    id: 22, type: 'theory', part: 'IV',
     title: 'AutoResetEvent — код',
     sections: [
       {
@@ -529,14 +644,14 @@ foreach (var item in GetItems())
   },
 
   {
-    id: 20, type: 'game', part: 'IV',
+    id: 23, type: 'game', part: 'IV',
     title: 'Игра 3 — Турникетът',
     component: Game3,
     speakerNotes: 'Всяко натискане на Set() трябва да пусне точно един thread. Брояците "Set() извикан" и "Преминали thread-ове" трябва да съвпадат.',
   },
 
   {
-    id: 21, type: 'theory', part: 'IV',
+    id: 24, type: 'theory', part: 'IV',
     title: 'ManualResetEvent — въведение',
     sections: [
       {
@@ -562,7 +677,7 @@ foreach (var item in GetItems())
   },
 
   {
-    id: 22, type: 'theory', part: 'IV',
+    id: 25, type: 'theory', part: 'IV',
     title: 'ManualResetEvent — код',
     sections: [
       {
@@ -601,14 +716,14 @@ initialized.Reset();      // затвори отново`,
   },
 
   {
-    id: 23, type: 'game', part: 'IV',
+    id: 26, type: 'game', part: 'IV',
     title: 'Игра 4 — Светофарът',
     component: Game4,
     speakerNotes: 'Нека учениците превключат между Auto и Manual режим и приложат едни и същи действия — Set(), Reset(). Разликата в броя преминали thread-ове е ключова.',
   },
 
   {
-    id: 24, type: 'codegame', part: 'IV',
+    id: 27, type: 'codegame', part: 'IV',
     title: 'Предизвикателство — напиши AutoResetEvent',
     component: Game6,
     speakerNotes: 'Producer-Consumer е един от най-честите pattern-и. Учениците трябва да разберат защо конструкторът получава false (начално заключено) и защо само един thread минава при AutoReset.',
@@ -617,21 +732,21 @@ initialized.Reset();      // затвори отново`,
   // ─── Part V ────────────────────────────────────────────────────────────────
 
   {
-    id: 25, type: 'interactive', part: 'V',
+    id: 28, type: 'interactive', part: 'V',
     title: 'Сравнителна таблица',
     component: CompareTable,
     speakerNotes: 'Оставете учениците да сортират по колона. Питайте кое е единствения с thread affinity. Кое е cross-process без именуване? (Никое — всички изискват имена за cross-process.)',
   },
 
   {
-    id: 26, type: 'interactive', part: 'V',
+    id: 29, type: 'interactive', part: 'V',
     title: 'Кога кое да използвам?',
     component: FlowChart,
     speakerNotes: 'Нека учениците кликнат различни сценарии. Целта е да разпознаят кой признак (cross-process? broadcast? ownership?) води до коя примитива.',
   },
 
   {
-    id: 27, type: 'theory', part: 'V',
+    id: 30, type: 'theory', part: 'V',
     title: 'Често срещани грешки',
     sections: [
       {
@@ -674,7 +789,7 @@ if (!mtx.WaitOne(5000))
   },
 
   {
-    id: 28, type: 'theory', part: 'V',
+    id: 31, type: 'theory', part: 'V',
     title: 'Performance бележки',
     sections: [
       {
@@ -701,7 +816,7 @@ if (!mtx.WaitOne(5000))
   },
 
   {
-    id: 29, type: 'quiz', part: 'V',
+    id: 32, type: 'quiz', part: 'V',
     title: 'Финален тест',
     component: Quiz,
     speakerNotes: '6 въпроса — 3 drag-drop, 3 multiple choice. Резултатът е само за самооценка. Нека учениците работят самостоятелно.',
@@ -710,7 +825,7 @@ if (!mtx.WaitOne(5000))
   // ─── Part VI ───────────────────────────────────────────────────────────────
 
   {
-    id: 30, type: 'interactive', part: 'VI',
+    id: 33, type: 'interactive', part: 'VI',
     title: 'Обобщение',
     component: InheritanceTree,
     recap: true,
@@ -720,17 +835,18 @@ if (!mtx.WaitOne(5000))
         items: [
           { accent: '', text: 'WaitHandle обвива kernel object — по-скъп от lock, но видим cross-process.' },
           { accent: 'mutex', text: 'Mutex — само owner thread освобождава; подходящ за cross-process mutual exclusion.' },
+          { accent: 'semaphore', text: 'Semaphore — брояч 0..N; Release() може от всеки thread (без thread affinity).' },
           { accent: 'auto', text: 'AutoResetEvent — Set() събужда точно един thread, портата се затваря автоматично.' },
           { accent: 'manual', text: 'ManualResetEvent — Set() е broadcast; портата остава отворена до Reset().' },
           { accent: '', text: 'Правило: lock за in-process, WaitHandle само когато трябва kernel-level синхронизация.' },
         ]
       },
     ],
-    speakerNotes: 'Петте точки са основните неща, които учениците трябва да запомнят. Помолете ги да ги кажат с думите си.',
+    speakerNotes: 'Шестте точки са основните неща, които учениците трябва да запомнят. Помолете ги да ги кажат с думите си.',
   },
 
   {
-    id: 31, type: 'theory', part: 'VI',
+    id: 34, type: 'theory', part: 'VI',
     title: 'Въпроси / Благодаря',
     sections: [
       {
@@ -738,6 +854,7 @@ if (!mtx.WaitOne(5000))
         sources: [
           { title: 'Microsoft Learn — WaitHandle Class', url: 'https://learn.microsoft.com/dotnet/api/system.threading.waithandle' },
           { title: 'Microsoft Learn — Mutex Class', url: 'https://learn.microsoft.com/dotnet/api/system.threading.mutex' },
+          { title: 'Microsoft Learn — Semaphore Class', url: 'https://learn.microsoft.com/dotnet/api/system.threading.semaphore' },
           { title: 'Albahari, J. — "Threading in C#"', url: 'https://www.albahari.com/threading/' },
           { title: 'Richter, J. — CLR via C# (глава 29)', url: '' },
         ]

@@ -276,11 +276,20 @@
   background: color-mix(in srgb, var(--mutex) 6%, var(--surface-panel));
 }
 
+.highlight-box.semaphore {
+  border-color: var(--semaphore-dim);
+  background: color-mix(in srgb, var(--semaphore) 6%, var(--surface-panel));
+}
+
 .highlight-box .hb-title {
   font-weight: 650;
   font-size: 13.5px;
   color: var(--mutex);
   margin-bottom: 6px;
+}
+
+.highlight-box.semaphore .hb-title {
+  color: var(--semaphore);
 }
 
 .highlight-box p {
@@ -323,6 +332,67 @@
   font-size: 12.5px;
   color: var(--text-dim);
   line-height: 1.5;
+}
+
+.signal-states {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 860px;
+}
+
+.signal-state {
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 1.5px solid color-mix(in srgb, var(--state-color) 30%, transparent);
+  background: color-mix(in srgb, var(--state-color) 8%, var(--surface-panel));
+  box-shadow: 0 16px 34px rgba(0,0,0,0.18);
+}
+
+.signal-state-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.signal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--state-color);
+  box-shadow: 0 0 10px var(--state-color);
+  flex-shrink: 0;
+}
+
+.signal-name {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--state-color);
+}
+
+.signal-subtitle {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+.signal-metaphor {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-faint);
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  border-left: 2px solid color-mix(in srgb, var(--state-color) 40%, transparent);
+}
+
+.signal-desc {
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.6;
 }
 
 .pitfall-list {
@@ -459,7 +529,8 @@
   }
 
   .compare-table,
-  .metaphor-steps {
+  .metaphor-steps,
+  .signal-states {
     grid-template-columns: 1fr;
   }
 }

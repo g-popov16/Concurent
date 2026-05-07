@@ -38,13 +38,20 @@ const scenarios = [
     answer: 'any',
     reason: 'WaitHandle.WaitAny() с масив от 3 handles — продължава при първия сигнализиран.',
   },
+  {
+    id: 7,
+    text: 'HTTP сървър обслужва до 10 едновременни заявки. Всяка заявка над лимита трябва да чака освобождаване.',
+    answer: 'semaphore',
+    reason: 'Semaphore(10, 10): WaitOne() намалява брояча, Release() го увеличава. Без thread affinity — всеки thread може да освободи слот.',
+  },
 ]
 
 const labels = {
-  mutex:  { label: '🔒 Mutex',          color: 'var(--mutex)' },
-  auto:   { label: '🚪 AutoResetEvent', color: 'var(--auto)'  },
-  manual: { label: '🚦 ManualResetEvent', color: 'var(--manual)' },
-  any:    { label: '⏳ WaitAny()',       color: 'var(--accent)' },
+  mutex:     { label: '🔒 Mutex',          color: 'var(--mutex)' },
+  semaphore: { label: '🔢 Semaphore',       color: 'var(--semaphore)' },
+  auto:      { label: '🚪 AutoResetEvent',  color: 'var(--auto)'  },
+  manual:    { label: '🚦 ManualResetEvent', color: 'var(--manual)' },
+  any:       { label: '⏳ WaitAny()',        color: 'var(--accent)' },
 }
 
 export default function FlowChart() {
