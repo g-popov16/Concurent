@@ -24,6 +24,9 @@
 }
 
 .race-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 9px 17px;
   border-radius: 8px;
   font-size: 13px;

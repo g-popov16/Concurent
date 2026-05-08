@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Lock, LockOpen, Check } from '@phosphor-icons/react'
 import './Game2Mutex.css'
 
 const THREAD_COLORS = [
@@ -122,7 +123,7 @@ export default function Game2Mutex() {
           <div className="g2-resource-col">
             <div className="g2-col-label">Критична секция</div>
             <div className={`g2-resource ${holder !== null ? 'occupied' : 'free'}`}>
-              <div className="g2-lock-icon">{holder !== null ? '🔒' : '🔓'}</div>
+              <div className="g2-lock-icon">{holder !== null ? <Lock size={24} weight="duotone" /> : <LockOpen size={24} weight="duotone" />}</div>
               {holder !== null ? (
                 <div className="g2-holder">
                   <div className="thread" style={{ background: THREAD_COLORS[holder].bg, color: THREAD_COLORS[holder].fg, borderColor: THREAD_COLORS[holder].border }}>
@@ -159,7 +160,7 @@ export default function Game2Mutex() {
                   <div className="thread" style={{ background: THREAD_COLORS[id].bg, color: THREAD_COLORS[id].fg, borderColor: THREAD_COLORS[id].border }}>
                     T{id + 1}
                   </div>
-                  <span className="g2-tc-label">✓</span>
+                  <span className="g2-tc-label"><Check size={13} weight="bold" /></span>
                 </div>
               ))}
             </div>

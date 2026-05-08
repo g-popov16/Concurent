@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { X, Clock, BookOpen, GameController, Code, Exam } from '@phosphor-icons/react'
+import { X, Clock, BookOpen, GameController, Code, Exam, Check } from '@phosphor-icons/react'
 import './LessonPlan.css'
 
 const agenda = [
@@ -144,7 +144,7 @@ export default function LessonPlan({ current, goTo, onClose }) {
                           </span>
                         )}
                         {isCurrent && <span className="lp-current-dot" />}
-                        {isPast && <span className="lp-check">✓</span>}
+                        {isPast && <span className="lp-check"><Check size={12} weight="bold" /></span>}
                       </button>
                     </li>
                   )

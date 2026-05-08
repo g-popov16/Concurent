@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Lock, DoorOpen, Broadcast, ArrowsDownUp, CaretUp, CaretDown } from '@phosphor-icons/react'
 import './CompareTable.css'
 
 const rows = [
@@ -8,7 +9,7 @@ const rows = [
   { feature: 'Set() метод',        mutex: 'Не',          auto: 'Да',        manual: 'Да'        },
   { feature: 'Освобождаване',      mutex: 'ReleaseMutex()',auto:'Автоматично', manual: 'Reset()'},
   { feature: 'Събужда N thread-а', mutex: 'Точно 1',     auto: 'Точно 1',   manual: 'Всички'   },
-  { feature: 'Típica употреба',    mutex: 'Shared resource', auto:'Producer-consumer', manual: 'Init barrier' },
+  { feature: 'Типична употреба',   mutex: 'Споделен ресурс', auto: 'Производител-потребител', manual: 'Инициализационна бариера' },
 ]
 
 export default function CompareTable() {
@@ -27,7 +28,7 @@ export default function CompareTable() {
   return (
     <div className="ct-wrap">
       <div className="tutorial-card">
-        <span className="tutorial-step">⇅</span>
+        <span className="tutorial-step"><ArrowsDownUp size={14} weight="bold" /></span>
         <div>
           <div className="tutorial-title">Сортирай по примитива, който сравняваш.</div>
           <div className="tutorial-text">Кликни заглавие на колона. Търси три признака: ownership, reset mode и колко thread-а събужда един сигнал.</div>
@@ -44,10 +45,16 @@ export default function CompareTable() {
                 onClick={() => handleSort(col)}
               >
                 <span className={`ct-th-label ${col}`}>
-                  {col === 'mutex' ? '🔒 Mutex' : col === 'auto' ? '🚪 AutoResetEvent' : '🚦 ManualResetEvent'}
+                  {col === 'mutex'
+                    ? <><Lock size={13} weight="duotone" /> Mutex</>
+                    : col === 'auto'
+                    ? <><DoorOpen size={13} weight="duotone" /> AutoResetEvent</>
+                    : <><Broadcast size={13} weight="duotone" /> ManualResetEvent</>}
                 </span>
                 <span className="ct-sort-arrow">
-                  {sortCol === col ? (sortDir === 1 ? '↑' : '↓') : '⇅'}
+                  {sortCol === col
+                    ? (sortDir === 1 ? <CaretUp size={11} weight="bold" /> : <CaretDown size={11} weight="bold" />)
+                    : <ArrowsDownUp size={11} weight="regular" />}
                 </span>
               </th>
             ))}

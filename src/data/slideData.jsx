@@ -9,6 +9,7 @@ import Game4 from '../games/Game4TrafficLight.jsx'
 import Game5 from '../games/Game5CodeMutex.jsx'
 import Game6 from '../games/Game6CodeAutoReset.jsx'
 import Quiz from '../quiz/Quiz.jsx'
+import Crossword from '../games/Crossword.jsx'
 
 export const parts = [
   { id: 'I',   title: 'Основи',               color: '#7c6af5', range: [0, 5]   },
@@ -48,17 +49,17 @@ export const slides = [
         type: 'scenario-list',
         items: [
           {
-            icon: '📄',
+            icon: 'file',
             title: 'Изгубено записване',
             text: 'Двама колеги редактират един Excel файл. Ако запишат едновременно, едното запазване заличава другото.',
           },
           {
-            icon: '🔀',
+            icon: 'shuffle',
             title: 'Непоследователно четене',
             text: 'Thread A чете структура докато Thread B я модифицира — частично старо, частично ново данни.',
           },
           {
-            icon: '💀',
+            icon: 'skull',
             title: 'Deadlock',
             text: 'T1 чака T2 да освободи ресурс A, T2 чака T1 да освободи ресурс B. Никой не продължава.',
           },
@@ -393,17 +394,17 @@ finally
         type: 'scenario-list',
         items: [
           {
-            icon: '🔄',
+            icon: 'arrows-clockwise',
             title: 'Cross-process достъп',
             text: 'Два процеса пишат в един файл. Именуван Mutex с "Global\\\\" prefix се вижда от двата.',
           },
           {
-            icon: '🔒',
+            icon: 'lock',
             title: 'Single-instance приложение',
             text: 'При стартиране проверяваш дали Mutex с твоето ИМЕ вече съществува. Ако да — друг екземпляр вече работи.',
           },
           {
-            icon: '👤',
+            icon: 'user',
             title: 'Thread ownership',
             text: 'Когато е важно да знаеш кой точно thread държи ресурса и само той да може да го освободи.',
           },
@@ -877,6 +878,13 @@ if (!mtx.WaitOne(5000))
     title: 'Финален тест',
     component: Quiz,
     speakerNotes: '6 въпроса — 3 drag-drop, 3 multiple choice. Резултатът е само за самооценка. Нека учениците работят самостоятелно.',
+  },
+
+  {
+    id: 32.5, type: 'game', part: 'V',
+    title: 'Кръстословица',
+    component: Crossword,
+    speakerNotes: 'Кликни клетка, пиши буква. Tab — следваща дума. Всички 6 думи са ключови термини от лекцията.',
   },
 
   // ─── Part VI ───────────────────────────────────────────────────────────────
