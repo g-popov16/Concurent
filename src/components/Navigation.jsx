@@ -1,7 +1,7 @@
-import { CaretLeft, CaretRight, List, Notepad, BookOpen } from '@phosphor-icons/react'
+import { CaretLeft, CaretRight, List, BookOpen } from '@phosphor-icons/react'
 import './Navigation.css'
 
-export default function Navigation({ current, total, onPrev, onNext, onTOC, onPlan, onNotes, onHelp, notesActive, planActive }) {
+export default function Navigation({ current, total, onPrev, onNext, onTOC, onPlan, onHelp, planActive }) {
   const pct = Math.round(((current + 1) / total) * 100)
 
   return (
@@ -42,13 +42,6 @@ export default function Navigation({ current, total, onPrev, onNext, onTOC, onPl
       </div>
 
       <div className="nav-right">
-        <button
-          className={`nav-icon-btn ${notesActive ? 'active-notes' : ''}`}
-          onClick={onNotes}
-          title="Бележки (S)"
-        >
-          <Notepad size={16} weight="regular" />
-        </button>
         <button className="nav-icon-btn nav-help" onClick={onHelp} title="Клавиши (?)">
           <span className="nav-key">?</span>
         </button>

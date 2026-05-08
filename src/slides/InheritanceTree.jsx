@@ -47,7 +47,7 @@ export default function InheritanceTree({ slide }) {
 
       {show('wh') && <div className="inh-vline" />}
 
-      {/* 3-column grid — fixed column widths so horizontal bar stays accurate */}
+      {/* 3-column grid — EWH sub-tree lives inside column 3 */}
       {(show('mtx') || show('sem') || show('ewh')) && (
         <div className="inh-branch-grid">
           <div className="inh-branch-item">
@@ -82,34 +82,32 @@ export default function InheritanceTree({ slide }) {
                   <span className="inh-label">EventWaitHandle</span>
                   <span className="inh-sub">родителски клас за събития</span>
                 </div>
+                {(show('are') || show('mre')) && (
+                  <>
+                    <div className="inh-vline" />
+                    <div className="inh-leaf-row">
+                      {show('are') && (
+                        <div className="inh-branch-item">
+                          <div className="inh-vline" />
+                          <div className="inh-node auto">
+                            <span className="inh-label">AutoResetEvent</span>
+                            <span className="inh-sub">авто ресет · един thread на Set()</span>
+                          </div>
+                        </div>
+                      )}
+                      {show('mre') && (
+                        <div className="inh-branch-item">
+                          <div className="inh-vline" />
+                          <div className="inh-node manual">
+                            <span className="inh-label">ManualResetEvent</span>
+                            <span className="inh-sub">ръчен ресет · broadcast Set()</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* EWH sub-tree — positioned under the right column via margin */}
-      {show('ewh') && (show('are') || show('mre')) && (
-        <div className="inh-ewh-sub">
-          <div className="inh-vline" />
-          <div className="inh-leaf-row">
-            {show('are') && (
-              <div className="inh-branch-item">
-                <div className="inh-vline" />
-                <div className="inh-node auto">
-                  <span className="inh-label">AutoResetEvent</span>
-                  <span className="inh-sub">авто ресет · един thread на Set()</span>
-                </div>
-              </div>
-            )}
-            {show('mre') && (
-              <div className="inh-branch-item">
-                <div className="inh-vline" />
-                <div className="inh-node manual">
-                  <span className="inh-label">ManualResetEvent</span>
-                  <span className="inh-sub">ръчен ресет · broadcast Set()</span>
-                </div>
-              </div>
             )}
           </div>
         </div>

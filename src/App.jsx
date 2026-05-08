@@ -131,9 +131,7 @@ export default function App() {
         onNext={next}
         onTOC={() => setShowTOC(true)}
         onPlan={() => setShowPlan(v => !v)}
-        onNotes={() => setShowNotes(v => !v)}
         onHelp={() => setShowHelp(v => !v)}
-        notesActive={showNotes}
         planActive={showPlan}
       />
 
@@ -152,7 +150,7 @@ export default function App() {
           <LessonPlan current={current} goTo={(i) => { goTo(i); setShowPlan(false) }} onClose={() => setShowPlan(false)} />
         )}
         {showStudyPlan && (
-          <StudyPlan onClose={() => setShowStudyPlan(false)} />
+          <StudyPlan slide={slides[current]} onClose={() => setShowStudyPlan(false)} />
         )}
         {showHelp && (
           <KeyboardHelp onClose={() => setShowHelp(false)} />
