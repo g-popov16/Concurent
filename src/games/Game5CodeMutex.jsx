@@ -37,7 +37,7 @@ function isCorrect(id, val) {
 export default function Game5CodeMutex() {
   const [values, setValues] = useState(initValues)
   const [revealed, setRevealed] = useState(false)
-  const [cheated, setCheated] = useState(false)
+  const [cheatMode, setCheatMode] = useState(false)
   const firstRef = useRef(null)
 
   const allDone = Object.keys(BLANKS).every(id => isCorrect(id, values[id]))
@@ -46,22 +46,27 @@ export default function Game5CodeMutex() {
     firstRef.current?.focus()
   }, [])
 
+  // Secret combo: Ctrl+Shift+. — not shown anywhere in the UI
   useEffect(() => {
     const handler = (e) => {
-      if (e.key !== '`') return
-      e.preventDefault()
-      setValues(Object.fromEntries(Object.keys(BLANKS).map(k => [k, BLANKS[k].answer])))
-      setRevealed(true)
-      setCheated(true)
+      if (e.ctrlKey && e.shiftKey && e.key === '.') {
+        e.preventDefault()
+        setCheatMode(v => !v)
+      }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
   const handleChange = (id, val) => {
-    setValues(prev => ({ ...prev, [id]: val }))
-    setRevealed(false)
-    setCheated(false)
+    if (cheatMode) {
+      // Real-time substitution: each character typed reveals the next correct character
+      const ans = BLANKS[id].answer
+      setValues(prev => ({ ...prev, [id]: ans.slice(0, val.length) }))
+    } else {
+      setValues(prev => ({ ...prev, [id]: val }))
+      setRevealed(false)
+    }
   }
 
   const blankState = (id) => {
@@ -73,7 +78,7 @@ export default function Game5CodeMutex() {
   const reset = () => {
     setValues(initValues)
     setRevealed(false)
-    setCheated(false)
+    setCheatMode(false)
     setTimeout(() => firstRef.current?.focus(), 0)
   }
 
@@ -96,11 +101,8 @@ export default function Game5CodeMutex() {
       <div className="cg-editor">
         <div className="cg-editor-bar">
           <span className="cg-lang">C#</span>
-          {allDone && (
-            <span className="cg-done-badge">
-              {cheated ? '` използван — запомни отговорите' : 'Правилно!'}
-            </span>
-          )}
+          {cheatMode && <span className="cg-cheat-dot" title="cheat" />}
+          {allDone && <span className="cg-done-badge">Правилно!</span>}
         </div>
         <div className="cg-code">
           {LINES.map((line, i) => {
@@ -149,7 +151,6 @@ export default function Game5CodeMutex() {
         <button className="cg-btn-reset" onClick={reset}>
           Изчисти
         </button>
-        <span className="cg-cheat">` — автопопълване</span>
       </div>
     </div>
   )

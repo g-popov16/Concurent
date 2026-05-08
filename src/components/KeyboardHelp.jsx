@@ -10,8 +10,8 @@ const shortcuts = [
   { keys: ['L'],                label: 'План на урока' },
   { keys: ['F'],                label: 'Fullscreen' },
   { keys: ['Esc'],              label: 'Съдържание' },
+  { keys: ['P'],                label: 'Учебен план' },
   { keys: ['?'],                label: 'Тази помощ' },
-  { keys: ['`'],                label: 'Автопопълване (в игри с код)' },
 ]
 
 export default function KeyboardHelp({ onClose }) {

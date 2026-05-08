@@ -56,6 +56,21 @@
   to   { transform: scale(1);    opacity: 1; }
 }
 
+/* Subtle cheat-mode indicator — a tiny pulsing dot, no text */
+.cg-cheat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.5;
+  animation: cheat-pulse 2s ease-in-out infinite;
+}
+
+@keyframes cheat-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%       { opacity: 0.65; transform: scale(1.3); }
+}
+
 .cg-done-badge {
   font-family: var(--font-mono);
   font-size: 10.5px;

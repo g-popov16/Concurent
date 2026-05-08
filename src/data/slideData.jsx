@@ -9,6 +9,7 @@ import Game4 from '../games/Game4TrafficLight.jsx'
 import Game5 from '../games/Game5CodeMutex.jsx'
 import Game6 from '../games/Game6CodeAutoReset.jsx'
 import Quiz from '../quiz/Quiz.jsx'
+import Crossword from '../games/Crossword.jsx'
 
 export const parts = [
   { id: 'I',   title: 'Основи',               color: '#7c6af5', range: [0, 5]   },
@@ -877,6 +878,13 @@ if (!mtx.WaitOne(5000))
     title: 'Финален тест',
     component: Quiz,
     speakerNotes: '6 въпроса — 3 drag-drop, 3 multiple choice. Резултатът е само за самооценка. Нека учениците работят самостоятелно.',
+  },
+
+  {
+    id: 32.5, type: 'game', part: 'V',
+    title: 'Кръстословица',
+    component: Crossword,
+    speakerNotes: 'Кликни клетка, пиши буква. Tab — следваща дума. Всички 6 думи са ключови термини от лекцията.',
   },
 
   // ─── Part VI ───────────────────────────────────────────────────────────────

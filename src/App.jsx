@@ -6,6 +6,7 @@ import Progress from './components/Progress.jsx'
 import SpeakerNotes from './components/SpeakerNotes.jsx'
 import TableOfContents from './components/TableOfContents.jsx'
 import LessonPlan from './components/LessonPlan.jsx'
+import StudyPlan from './components/StudyPlan.jsx'
 import KeyboardHelp from './components/KeyboardHelp.jsx'
 import SlideRenderer from './components/SlideRenderer.jsx'
 import './App.css'
@@ -39,6 +40,7 @@ export default function App() {
   const [showNotes, setShowNotes] = useState(false)
   const [showTOC, setShowTOC] = useState(false)
   const [showPlan, setShowPlan] = useState(false)
+  const [showStudyPlan, setShowStudyPlan] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const prevRef = useRef(current)
   const firstRenderRef = useRef(true)
@@ -62,12 +64,13 @@ export default function App() {
     const handler = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
 
-      const anyOverlay = showTOC || showNotes || showPlan || showHelp
+      const anyOverlay = showTOC || showNotes || showPlan || showStudyPlan || showHelp
       if (anyOverlay) {
         if (e.key === 'Escape') {
           setShowTOC(false)
           setShowNotes(false)
           setShowPlan(false)
+          setShowStudyPlan(false)
           setShowHelp(false)
         }
         return
@@ -84,6 +87,8 @@ export default function App() {
           setShowNotes(v => !v); break
         case 'l': case 'L':
           setShowPlan(v => !v); break
+        case 'p': case 'P':
+          setShowStudyPlan(v => !v); break
         case 'f': case 'F':
           if (!document.fullscreenElement) document.documentElement.requestFullscreen?.()
           else document.exitFullscreen?.()
@@ -96,7 +101,7 @@ export default function App() {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [next, prev, nextGame, showTOC, showNotes, showPlan, showHelp])
+  }, [next, prev, nextGame, showTOC, showNotes, showPlan, showStudyPlan, showHelp])
 
   return (
     <div className="app-shell">
@@ -145,6 +150,9 @@ export default function App() {
         )}
         {showPlan && (
           <LessonPlan current={current} goTo={(i) => { goTo(i); setShowPlan(false) }} onClose={() => setShowPlan(false)} />
+        )}
+        {showStudyPlan && (
+          <StudyPlan onClose={() => setShowStudyPlan(false)} />
         )}
         {showHelp && (
           <KeyboardHelp onClose={() => setShowHelp(false)} />

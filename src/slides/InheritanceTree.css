@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
   padding: 16px 0;
   height: 100%;
   justify-content: center;
@@ -19,86 +18,75 @@
   justify-content: center;
 }
 
+/* Shared vertical line */
+.inh-vline {
+  width: 1.5px;
+  height: 24px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* ── Nodes ─────────────────────────────────────────── */
 .inh-node {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 20px;
+  padding: 11px 18px;
   border-radius: var(--radius-lg);
   border: 1.5px solid var(--border);
   background: var(--surface-raised);
-  min-width: 160px;
-  animation: pop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  min-width: 150px;
+  animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.inh-node.accent     { border-color: color-mix(in srgb, var(--accent) 40%, transparent);     background: var(--accent-dim); }
-.inh-node.mutex      { border-color: color-mix(in srgb, var(--mutex) 35%, transparent);      background: var(--mutex-dim); }
-.inh-node.semaphore  { border-color: color-mix(in srgb, var(--semaphore) 35%, transparent);  background: var(--semaphore-dim); }
-.inh-node.ewh        { border-color: var(--border); }
-.inh-node.auto       { border-color: color-mix(in srgb, var(--auto) 35%, transparent);       background: var(--auto-dim); }
-.inh-node.manual     { border-color: color-mix(in srgb, var(--manual) 35%, transparent);     background: var(--manual-dim); }
+.inh-node.accent    { border-color: color-mix(in srgb, var(--accent) 40%, transparent);    background: var(--accent-dim); }
+.inh-node.mutex     { border-color: color-mix(in srgb, var(--mutex) 35%, transparent);     background: var(--mutex-dim); }
+.inh-node.semaphore { border-color: color-mix(in srgb, var(--semaphore) 35%, transparent); background: var(--semaphore-dim); }
+.inh-node.ewh       { border-color: color-mix(in srgb, var(--accent) 22%, transparent); }
+.inh-node.auto      { border-color: color-mix(in srgb, var(--auto) 35%, transparent);      background: var(--auto-dim); }
+.inh-node.manual    { border-color: color-mix(in srgb, var(--manual) 35%, transparent);    background: var(--manual-dim); }
 
 .inh-label {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text);
 }
 
-.inh-node.accent     .inh-label { color: var(--accent); }
-.inh-node.mutex      .inh-label { color: var(--mutex); }
-.inh-node.semaphore  .inh-label { color: var(--semaphore); }
-.inh-node.auto       .inh-label { color: var(--auto); }
-.inh-node.manual     .inh-label { color: var(--manual); }
+.inh-node.accent    .inh-label { color: var(--accent); }
+.inh-node.mutex     .inh-label { color: var(--mutex); }
+.inh-node.semaphore .inh-label { color: var(--semaphore); }
+.inh-node.auto      .inh-label { color: var(--auto); }
+.inh-node.manual    .inh-label { color: var(--manual); }
 
 .inh-sub {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-faint);
   margin-top: 3px;
   text-align: center;
   max-width: 200px;
 }
 
-.inh-connector-down {
-  width: 1.5px;
-  height: 28px;
-  background: var(--border);
-  margin: 0 auto;
-}
-
-/* Three-node branch row: Mutex | Semaphore | EventWaitHandle */
-.inh-branch-row {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
+/* ── Branch grid (3 fixed-width columns) ────────────── */
+/*
+  Using a CSS grid with 3 equal fixed columns guarantees that
+  the horizontal bar pseudo-element always connects the centers
+  of the first and last columns, regardless of node content width.
+  The key insight: left = col_width/2, right = col_width/2.
+*/
+.inh-branch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 230px);
   position: relative;
 }
 
-/* Horizontal bar spanning from Mutex center to EventWaitHandle center */
-.inh-branch-row::before {
+/* Horizontal bar: from center-of-col-1 to center-of-col-3 */
+.inh-branch-grid::before {
   content: '';
   position: absolute;
   top: 0;
-  left: calc(50% - 220px);
-  width: 440px;
-  height: 1.5px;
-  background: var(--border);
-}
-
-/* Leaf row is nested inside the EventWaitHandle branch item */
-.inh-leaf-row {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  position: relative;
-}
-
-.inh-leaf-row::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: calc(50% - 100px);
-  width: 200px;
+  left: 115px;   /* 230px / 2 */
+  right: 115px;  /* 230px / 2 */
   height: 1.5px;
   background: var(--border);
 }
@@ -109,47 +97,57 @@
   align-items: center;
 }
 
-.inh-connector-h {
-  width: 1.5px;
-  height: 20px;
-  background: var(--border);
-  margin: 0 auto;
+/* ── EWH sub-tree (leaf row) ─────────────────────────── */
+/*
+  Positioned under the RIGHT column of the 3-column branch grid.
+  The right column spans from 460px to 690px (0-based).
+  Its center = 460 + 115 = 575px from the left of the branch grid.
+  Since inh-tree has align-items:center, the branch grid is centered.
+  We align the sub-tree to the same center via align-self + margin.
+  The trick: align-self:flex-start + margin-left = (690 * 2/3) px
+  which equals the left edge of the right column,
+  plus (230/2) for centering = 460+115 = 575px offset from grid left.
+  Since the tree is center-aligned, we use margin-left: calc(230px * 2/3 * 3 - 230px/2)
+  = margin-left: calc(460px) from the center... too complex.
+  Simpler: the sub-tree is a sibling, inh-tree centers both.
+  Use a wrapper that's 690px wide and pad-left to the right column.
+*/
+.inh-ewh-sub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 690px;                /* same as branch grid total width */
+  padding-left: calc(230px * 2); /* push content to column 3 center */
+  box-sizing: border-box;
 }
 
+/* The leaf row sits inside the padded sub-tree, auto-centered under col 3 */
+.inh-leaf-row {
+  display: flex;
+  gap: 18px;
+  position: relative;
+  justify-content: center;
+}
+
+/* Horizontal bar for leaf row: from ARE-center to MRE-center */
+.inh-leaf-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 1.5px;
+  background: var(--border);
+}
+
+/* ── Legend ──────────────────────────────────────────── */
 .inh-legend {
   display: flex;
   gap: 10px;
-  margin-top: 32px;
+  margin-top: 28px;
   flex-wrap: wrap;
   justify-content: center;
   animation: fadeIn 0.4s ease;
-}
-
-@media (max-width: 860px) {
-  .inh-tree {
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 16px;
-    min-width: 580px;
-  }
-
-  .inh-node {
-    min-width: 130px;
-    padding: 10px 12px;
-  }
-
-  .inh-label {
-    font-size: 12px;
-  }
-
-  .inh-branch-row {
-    gap: 24px;
-  }
-
-  .inh-branch-row::before {
-    left: calc(50% - 185px);
-    width: 370px;
-  }
 }
 
 .legend-item {
@@ -164,3 +162,34 @@
 .legend-item.semaphore { color: var(--semaphore); }
 .legend-item.auto      { color: var(--auto); }
 .legend-item.manual    { color: var(--manual); }
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 860px) {
+  .inh-tree {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 16px;
+    min-width: 600px;
+  }
+
+  .inh-branch-grid {
+    grid-template-columns: repeat(3, 190px);
+  }
+
+  .inh-branch-grid::before {
+    left: 95px;
+    right: 95px;
+  }
+
+  .inh-ewh-sub {
+    width: 570px;
+    padding-left: calc(190px * 2);
+  }
+
+  .inh-node {
+    min-width: 130px;
+    padding: 9px 12px;
+  }
+
+  .inh-label { font-size: 11px; }
+}
