@@ -23,7 +23,7 @@ export default function TitleSlide({ slide }) {
       .from('.title-sub', { y: 12, duration: 0.36 }, '-=0.28')
       .from('.title-hierarchy', { y: 18, scale: 0.98, duration: 0.48 }, '-=0.08')
       .from('.title-authors', { y: 10, duration: 0.3 }, '-=0.1')
-      .from('.th-node:not(.th-ghost)', { y: 8, stagger: 0.045, duration: 0.28 }, '-=0.58')
+      .from('.th-node', { y: 8, stagger: 0.045, duration: 0.28 }, '-=0.58')
   }, { scope: slideRef })
 
   return (
@@ -50,23 +50,31 @@ export default function TitleSlide({ slide }) {
 
         <div className="title-hierarchy">
           <div className="th-node th-root">WaitHandle</div>
-          <svg className="th-svg" viewBox="0 0 400 60" preserveAspectRatio="none">
-            <line x1="200" y1="0" x2="80"  y2="50" className="th-line" style={{ '--d': '0.05s' }} />
-            <line x1="200" y1="0" x2="200" y2="50" className="th-line" style={{ '--d': '0.1s' }} />
-            <line x1="200" y1="0" x2="320" y2="50" className="th-line" style={{ '--d': '0.15s' }} />
-          </svg>
-          <div className="th-row">
-            <div className="th-node th-mutex">Mutex</div>
-            <div className="th-node th-ewh">EventWaitHandle</div>
-            <div className="th-node th-ewh th-ghost">·</div>
-          </div>
-          <svg className="th-svg th-svg-small" viewBox="0 0 400 40" preserveAspectRatio="none">
-            <line x1="200" y1="0" x2="140" y2="40" className="th-line" style={{ '--d': '0.25s' }} />
-            <line x1="200" y1="0" x2="260" y2="40" className="th-line" style={{ '--d': '0.3s' }} />
-          </svg>
-          <div className="th-row th-row-leaf">
-            <div className="th-node th-auto">AutoResetEvent</div>
-            <div className="th-node th-manual">ManualResetEvent</div>
+          <div className="th-vline" />
+          <div className="th-branch">
+            <div className="th-col">
+              <div className="th-vline" />
+              <div className="th-node th-mutex">Mutex</div>
+            </div>
+            <div className="th-col">
+              <div className="th-vline" />
+              <div className="th-node th-semaphore">Semaphore</div>
+            </div>
+            <div className="th-col">
+              <div className="th-vline" />
+              <div className="th-node th-ewh">EventWaitHandle</div>
+              <div className="th-vline" />
+              <div className="th-leaf-row">
+                <div className="th-col">
+                  <div className="th-vline" />
+                  <div className="th-node th-auto">AutoResetEvent</div>
+                </div>
+                <div className="th-col">
+                  <div className="th-vline" />
+                  <div className="th-node th-manual">ManualResetEvent</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
