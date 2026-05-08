@@ -1,19 +1,20 @@
 .theory-slide {
   display: grid;
-  grid-template-columns: minmax(200px, 0.58fr) minmax(480px, 1.42fr);
+  grid-template-columns: minmax(200px, 0.58fr) minmax(0, 1.42fr);
   column-gap: clamp(26px, 4vw, 68px);
   height: 100%;
   padding: clamp(30px, 4.5vw, 60px) clamp(38px, 5vw, 78px) 34px;
   overflow: hidden;
   position: relative;
+  isolation: isolate;
 }
 
 .theory-header {
   align-self: stretch;
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: clamp(34px, 5vw, 72px);
+  position: relative;
+  z-index: 2;
   padding-top: 6px;
 }
 
