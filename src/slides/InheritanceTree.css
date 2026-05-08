@@ -95,33 +95,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible;
 }
 
-/* ── EWH sub-tree (leaf row) ─────────────────────────── */
-/*
-  Positioned under the RIGHT column of the 3-column branch grid.
-  The right column spans from 460px to 690px (0-based).
-  Its center = 460 + 115 = 575px from the left of the branch grid.
-  Since inh-tree has align-items:center, the branch grid is centered.
-  We align the sub-tree to the same center via align-self + margin.
-  The trick: align-self:flex-start + margin-left = (690 * 2/3) px
-  which equals the left edge of the right column,
-  plus (230/2) for centering = 460+115 = 575px offset from grid left.
-  Since the tree is center-aligned, we use margin-left: calc(230px * 2/3 * 3 - 230px/2)
-  = margin-left: calc(460px) from the center... too complex.
-  Simpler: the sub-tree is a sibling, inh-tree centers both.
-  Use a wrapper that's 690px wide and pad-left to the right column.
-*/
-.inh-ewh-sub {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 690px;                /* same as branch grid total width */
-  padding-left: calc(230px * 2); /* push content to column 3 center */
-  box-sizing: border-box;
-}
-
-/* The leaf row sits inside the padded sub-tree, auto-centered under col 3 */
+/* ── EWH leaf row (ARE + MRE, nested inside EWH branch-item) ─── */
 .inh-leaf-row {
   display: flex;
   gap: 18px;
@@ -129,13 +106,15 @@
   justify-content: center;
 }
 
-/* Horizontal bar for leaf row: from ARE-center to MRE-center */
+/* Horizontal bar connecting ARE-center to MRE-center.
+   Nodes are equal width (~186px) with an 18px gap → row ≈ 390px.
+   Node center is at ~93px from its edge → ~24% of row width. */
 .inh-leaf-row::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 25%;
-  right: 25%;
+  left: 24%;
+  right: 24%;
   height: 1.5px;
   background: var(--border);
 }

@@ -93,7 +93,7 @@ const PLAN = [
   },
 ]
 
-export default function StudyPlan({ onClose }) {
+export default function StudyPlan({ slide, onClose }) {
   return (
     <motion.div
       className="overlay-backdrop"
@@ -122,6 +122,15 @@ export default function StudyPlan({ onClose }) {
         </div>
 
         <div className="sp-body">
+          {slide?.speakerNotes && (
+            <div className="sp-notes-section">
+              <div className="sp-section-title" style={{ '--sc': 'var(--accent)' }}>
+                <span className="sp-dot" />
+                Бележки — {slide.title}
+              </div>
+              <p className="sp-notes-text">{slide.speakerNotes}</p>
+            </div>
+          )}
           {PLAN.map((section, si) => (
             <div key={si} className="sp-section">
               <div className="sp-section-title" style={{ '--sc': section.color }}>
