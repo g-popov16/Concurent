@@ -133,7 +133,7 @@
 }
 
 .cw-done-icon {
-  font-size: 15px;
+  flex-shrink: 0;
 }
 
 /* ── Clue panel ──────────────────────────────────────── */

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Lock, Hash, DoorOpen, Broadcast } from '@phosphor-icons/react'
 import './InheritanceTree.css'
 
 const nodes = [
@@ -39,7 +40,7 @@ export default function InheritanceTree({ slide }) {
         {show('wh') && (
           <div className="inh-node accent">
             <span className="inh-label">WaitHandle</span>
-            <span className="inh-sub">abstract base class</span>
+            <span className="inh-sub">абстрактен базов клас</span>
           </div>
         )}
       </div>
@@ -55,7 +56,7 @@ export default function InheritanceTree({ slide }) {
                 <div className="inh-vline" />
                 <div className="inh-node mutex">
                   <span className="inh-label">Mutex</span>
-                  <span className="inh-sub">thread affinity · cross-process</span>
+                  <span className="inh-sub">нишков афинитет · cross-process</span>
                 </div>
               </>
             )}
@@ -67,7 +68,7 @@ export default function InheritanceTree({ slide }) {
                 <div className="inh-vline" />
                 <div className="inh-node semaphore">
                   <span className="inh-label">Semaphore</span>
-                  <span className="inh-sub">N-count · cross-process</span>
+                  <span className="inh-sub">N-брояч · cross-process</span>
                 </div>
               </>
             )}
@@ -79,7 +80,7 @@ export default function InheritanceTree({ slide }) {
                 <div className="inh-vline" />
                 <div className="inh-node ewh">
                   <span className="inh-label">EventWaitHandle</span>
-                  <span className="inh-sub">parent class for events</span>
+                  <span className="inh-sub">родителски клас за събития</span>
                 </div>
               </>
             )}
@@ -97,7 +98,7 @@ export default function InheritanceTree({ slide }) {
                 <div className="inh-vline" />
                 <div className="inh-node auto">
                   <span className="inh-label">AutoResetEvent</span>
-                  <span className="inh-sub">auto reset · one thread per Set()</span>
+                  <span className="inh-sub">авто ресет · един thread на Set()</span>
                 </div>
               </div>
             )}
@@ -106,7 +107,7 @@ export default function InheritanceTree({ slide }) {
                 <div className="inh-vline" />
                 <div className="inh-node manual">
                   <span className="inh-label">ManualResetEvent</span>
-                  <span className="inh-sub">manual reset · broadcast Set()</span>
+                  <span className="inh-sub">ръчен ресет · broadcast Set()</span>
                 </div>
               </div>
             )}
@@ -116,10 +117,10 @@ export default function InheritanceTree({ slide }) {
 
       {slide?.recap && (
         <div className="inh-legend">
-          <span className="legend-item mutex">🔒 Mutex — exclusive ownership</span>
-          <span className="legend-item semaphore">🔢 Semaphore — count-based</span>
-          <span className="legend-item auto">🚪 AutoResetEvent — one-at-a-time</span>
-          <span className="legend-item manual">🚦 ManualResetEvent — broadcast</span>
+          <span className="legend-item mutex"><Lock size={13} weight="duotone" /> Mutex — изключително притежание</span>
+          <span className="legend-item semaphore"><Hash size={13} weight="duotone" /> Semaphore — брояч</span>
+          <span className="legend-item auto"><DoorOpen size={13} weight="duotone" /> AutoResetEvent — един по един</span>
+          <span className="legend-item manual"><Broadcast size={13} weight="duotone" /> ManualResetEvent — broadcast</span>
         </div>
       )}
     </div>

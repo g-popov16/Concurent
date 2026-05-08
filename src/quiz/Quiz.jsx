@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Lock, DoorOpen, Broadcast, DotsSixVertical, Check, X as XIcon } from '@phosphor-icons/react'
 import './Quiz.css'
 
 const DD_QUESTIONS = [
@@ -56,9 +57,18 @@ const MC_QUESTIONS = [
 ]
 
 const PRIMITIVE_LABELS = {
-  mutex:  { label: '🔒 Mutex',           color: 'var(--mutex)' },
-  auto:   { label: '🚪 AutoResetEvent',  color: 'var(--auto)'  },
-  manual: { label: '🚦 ManualResetEvent', color: 'var(--manual)' },
+  mutex:  { name: 'Mutex',           Icon: Lock,      color: 'var(--mutex)' },
+  auto:   { name: 'AutoResetEvent',  Icon: DoorOpen,  color: 'var(--auto)'  },
+  manual: { name: 'ManualResetEvent', Icon: Broadcast, color: 'var(--manual)' },
+}
+
+function PrimLabel({ type, size = 13 }) {
+  const { Icon, name, color } = PRIMITIVE_LABELS[type]
+  return (
+    <span style={{ color, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      <Icon size={size} weight="duotone" />{name}
+    </span>
+  )
 }
 
 export default function Quiz() {
@@ -131,15 +141,19 @@ export default function Quiz() {
                     onClick={() => !submitted && setPicked(p => p === q.id ? null : q.id)}
                     aria-pressed={picked === q.id}
                   >
-                    <span className="dd-drag-hint">⠿</span>
+                    <span className="dd-drag-hint"><DotsSixVertical size={14} weight="bold" /></span>
                     <span className="dd-text">{q.scenario}</span>
                     {placed && (
                       <span className="dd-placed-badge" style={{ color: PRIMITIVE_LABELS[placed].color }}>
-                        {PRIMITIVE_LABELS[placed].label}
+                        <PrimLabel type={placed} size={12} />
                       </span>
                     )}
                     {submitted && (
-                      <span className={`dd-result-icon`}>{correct ? '✓' : `✗ → ${PRIMITIVE_LABELS[q.answer].label}`}</span>
+                      <span className="dd-result-icon">
+                        {correct
+                          ? <Check size={13} weight="bold" />
+                          : <><XIcon size={13} weight="bold" /> → <PrimLabel type={q.answer} size={12} /></>}
+                      </span>
                     )}
                   </div>
                 )
@@ -147,7 +161,7 @@ export default function Quiz() {
             </div>
 
             <div className="dd-zones">
-              {Object.entries(PRIMITIVE_LABELS).map(([key, { label, color }]) => (
+              {Object.entries(PRIMITIVE_LABELS).map(([key, { color }]) => (
                 <div
                   key={key}
                   className={`dd-zone ${dragging || picked ? 'droppable' : ''}`}
@@ -156,7 +170,7 @@ export default function Quiz() {
                   onDragOver={onDragOver}
                   onClick={() => assignPicked(key)}
                 >
-                  <span className="dd-zone-label" style={{ color }}>{label}</span>
+                  <span className="dd-zone-label" style={{ color }}><PrimLabel type={key} size={14} /></span>
                   <div className="dd-zone-cards">
                     {DD_QUESTIONS.filter(q => ddAnswers[q.id] === key).map(q => (
                       <div key={q.id} className="dd-zone-chip">

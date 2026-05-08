@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Lock, Hash, DoorOpen, Broadcast, Hourglass } from '@phosphor-icons/react'
 import './FlowChart.css'
 
 const scenarios = [
@@ -46,12 +47,21 @@ const scenarios = [
   },
 ]
 
-const labels = {
-  mutex:     { label: '🔒 Mutex',          color: 'var(--mutex)' },
-  semaphore: { label: '🔢 Semaphore',       color: 'var(--semaphore)' },
-  auto:      { label: '🚪 AutoResetEvent',  color: 'var(--auto)'  },
-  manual:    { label: '🚦 ManualResetEvent', color: 'var(--manual)' },
-  any:       { label: '⏳ WaitAny()',        color: 'var(--accent)' },
+const LABEL_CFG = {
+  mutex:     { Icon: Lock,      text: 'Mutex',           color: 'var(--mutex)' },
+  semaphore: { Icon: Hash,      text: 'Semaphore',       color: 'var(--semaphore)' },
+  auto:      { Icon: DoorOpen,  text: 'AutoResetEvent',  color: 'var(--auto)'  },
+  manual:    { Icon: Broadcast, text: 'ManualResetEvent', color: 'var(--manual)' },
+  any:       { Icon: Hourglass, text: 'WaitAny()',       color: 'var(--accent)' },
+}
+
+function PrimLabel({ type }) {
+  const { Icon, text, color } = LABEL_CFG[type]
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color }}>
+      <Icon size={17} weight="duotone" />{text}
+    </span>
+  )
 }
 
 export default function FlowChart() {
@@ -90,8 +100,8 @@ export default function FlowChart() {
               Покажи отговора
             </button>
           ) : (
-            <div className="fc-answer" style={{ '--ans-color': labels[scenario.answer].color }}>
-              <div className="fc-answer-label">{labels[scenario.answer].label}</div>
+            <div className="fc-answer" style={{ '--ans-color': LABEL_CFG[scenario.answer].color }}>
+              <div className="fc-answer-label"><PrimLabel type={scenario.answer} /></div>
               <p className="fc-reason">{scenario.reason}</p>
             </div>
           )}

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
+import { Warning, Lock, Lightning, ArrowCounterClockwise, Check } from '@phosphor-icons/react'
 import './RaceDemo.css'
 
 const ROUNDS = 50
@@ -189,17 +190,21 @@ export default function RaceDemo() {
       <div className="race-top-bar">
         <div className="race-actions">
           <button className="race-btn r-unsafe" onClick={() => runUnsafe(SPEED_MS[speed])} disabled={sim.running}>
-            {sim.running && sim.mode === 'unsafe' ? '⚡ Работи…' : '⚠ Без синхронизация'}
+            {sim.running && sim.mode === 'unsafe'
+              ? <><Lightning size={14} weight="fill" /> Работи…</>
+              : <><Warning size={14} weight="duotone" /> Без синхронизация</>}
           </button>
           <button className="race-btn r-safe" onClick={() => runSafe(SPEED_MS[speed])} disabled={sim.running}>
-            {sim.running && sim.mode === 'safe' ? '🔒 Работи…' : '🔒 С lock'}
+            {sim.running && sim.mode === 'safe'
+              ? <><Lock size={14} weight="duotone" /> Работи…</>
+              : <><Lock size={14} weight="duotone" /> С lock</>}
           </button>
-          <button className="race-btn r-reset" onClick={reset}>↺</button>
+          <button className="race-btn r-reset" onClick={reset}><ArrowCounterClockwise size={14} weight="bold" /></button>
         </div>
         <div className="speed-control">
-          {['slow', 'normal', 'fast'].map((s) => (
+          {[['slow', 'Бавно'], ['normal', 'Нормално'], ['fast', 'Бързо']].map(([s, label]) => (
             <button key={s} className={`speed-btn ${speed === s ? 'spd-on' : ''}`} onClick={() => setSpeed(s)} disabled={sim.running}>
-              {s === 'slow' ? '🐢' : s === 'normal' ? '▶' : '⚡'}
+              {label}
             </button>
           ))}
         </div>
@@ -282,7 +287,7 @@ export default function RaceDemo() {
       {/* Verdict */}
       {sim.done && (
         <div className={`verdict ${sim.mode === 'unsafe' ? 'v-bad' : 'v-good'}`}>
-          <span className="v-icon">{sim.mode === 'unsafe' ? '⚠' : '✓'}</span>
+          <span className="v-icon">{sim.mode === 'unsafe' ? <Warning size={16} weight="duotone" /> : <Check size={16} weight="bold" />}</span>
           <div>
             {sim.mode === 'unsafe' ? (
               <>

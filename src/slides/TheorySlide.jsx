@@ -1,10 +1,25 @@
 import { useRef } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
+import { File, ArrowsLeftRight, Skull, Lock, ArrowsClockwise, UserCircle } from '@phosphor-icons/react'
 import CodeBlock from './CodeBlock.jsx'
 import './TheorySlide.css'
 
 gsap.registerPlugin(useGSAP)
+
+const SCENARIO_ICONS = {
+  file:              File,
+  shuffle:           ArrowsLeftRight,
+  skull:             Skull,
+  lock:              Lock,
+  'arrows-clockwise': ArrowsClockwise,
+  user:              UserCircle,
+}
+
+function ScenarioIcon({ name }) {
+  const Icon = SCENARIO_ICONS[name]
+  return Icon ? <Icon size={20} weight="duotone" /> : null
+}
 
 function Section({ section }) {
   switch (section.type) {
@@ -73,7 +88,7 @@ function Section({ section }) {
         <div className="scenario-list">
           {section.items.map((s, i) => (
             <div key={i} className="scenario-item">
-              <span className="scenario-icon">{s.icon}</span>
+              <span className="scenario-icon"><ScenarioIcon name={s.icon} /></span>
               <div>
                 <div className="scenario-title">{s.title}</div>
                 <div className="scenario-text">{s.text}</div>

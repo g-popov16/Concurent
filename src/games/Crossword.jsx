@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { CheckCircle } from '@phosphor-icons/react'
 import './Crossword.css'
 
 const ROWS = 7
@@ -261,7 +262,7 @@ export default function Crossword() {
 
         {done && (
           <div className="cw-done">
-            <span className="cw-done-icon">✓</span>
+            <CheckCircle size={20} weight="duotone" className="cw-done-icon" />
             Всички думи правилни!
           </div>
         )}
