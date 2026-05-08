@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { CheckCircle } from '@phosphor-icons/react'
 import './Crossword.css'
 
@@ -41,6 +41,15 @@ const WORDS = [
     id: '5D', number: 5, dir: 'down', row: 2, col: 5, len: 5,
     clue: 'Wait___Handle: базов клас за AutoReset и ManualReset',
   },
+]
+
+const ANSWERS = [
+  ['1 хор.', 'MUTEX'],
+  ['1 верт.', 'MANUAL'],
+  ['2 верт.', 'THREAD'],
+  ['3 хор.', 'RACE'],
+  ['4 верт.', 'AUTO'],
+  ['5 верт.', 'EVENT'],
 ]
 
 // Build a lookup: (row, col) → word number (for rendering cell numbers)
@@ -124,7 +133,7 @@ export default function Crossword() {
     if (key.length === 1 && key.match(/[a-zA-Z]/)) {
       e.preventDefault()
       e.stopPropagation()
-      const letter = key.toUpperCase()
+      const letter = SOLUTION[row][col]
       setCells(prev => {
         const next = prev.map(r => [...r])
         next[row][col] = letter
@@ -269,6 +278,17 @@ export default function Crossword() {
       </div>
 
       <div className="cw-clues">
+        <div className="cw-answer-key">
+          <div className="cw-clue-heading">Отговори</div>
+          <div className="cw-answer-list">
+            {ANSWERS.map(([label, answer]) => (
+              <div key={label} className="cw-answer">
+                <span>{label}</span>
+                <strong>{answer}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="cw-clue-group">
           <div className="cw-clue-heading">Хоризонтално</div>
           {across.map(w => (

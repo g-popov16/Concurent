@@ -34,6 +34,10 @@ function isCorrect(id, val) {
   return normalize(val) === normalize(BLANKS[id].answer)
 }
 
+function isCheatShortcut(e) {
+  return e.ctrlKey && e.shiftKey && (e.key === '.' || e.key === '>' || e.code === 'Period')
+}
+
 export default function Game5CodeMutex() {
   const [values, setValues] = useState(initValues)
   const [revealed, setRevealed] = useState(false)
@@ -49,7 +53,7 @@ export default function Game5CodeMutex() {
   // Secret combo: Ctrl+Shift+. — not shown anywhere in the UI
   useEffect(() => {
     const handler = (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === '.') {
+      if (isCheatShortcut(e)) {
         e.preventDefault()
         setCheatMode(v => !v)
       }
@@ -60,11 +64,33 @@ export default function Game5CodeMutex() {
 
   const handleChange = (id, val) => {
     if (cheatMode) {
-      // Real-time substitution: each character typed reveals the next correct character
       const ans = BLANKS[id].answer
       setValues(prev => ({ ...prev, [id]: ans.slice(0, val.length) }))
     } else {
       setValues(prev => ({ ...prev, [id]: val }))
+      setRevealed(false)
+    }
+  }
+
+  const handleKeyDown = (id, e) => {
+    if (e.key === 'Enter') {
+      setRevealed(true)
+      return
+    }
+
+    if (!cheatMode) return
+
+    const ans = BLANKS[id].answer
+    if (e.key === 'Backspace') {
+      e.preventDefault()
+      setValues(prev => ({ ...prev, [id]: prev[id].slice(0, -1) }))
+      setRevealed(false)
+      return
+    }
+
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault()
+      setValues(prev => ({ ...prev, [id]: ans.slice(0, Math.min(prev[id].length + 1, ans.length)) }))
       setRevealed(false)
     }
   }
@@ -124,7 +150,7 @@ export default function Game5CodeMutex() {
                         className="cg-input"
                         value={values[line.id]}
                         onChange={e => handleChange(line.id, e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && setRevealed(true)}
+                        onKeyDown={e => handleKeyDown(line.id, e)}
                         style={{ width: `${Math.max(values[line.id].length + 1, BLANKS[line.id].answer.length + 2)}ch` }}
                         spellCheck={false}
                         autoComplete="off"
