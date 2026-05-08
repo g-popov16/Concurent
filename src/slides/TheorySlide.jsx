@@ -206,7 +206,7 @@ export default function TheorySlide({ slide }) {
 
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
     tl.from('.theory-kicker', { autoAlpha: 0, y: 12, duration: 0.32 })
-      .from('.theory-title', { autoAlpha: 0, y: 24, filter: 'blur(8px)', duration: 0.56 }, '-=0.12')
+      .from('.theory-title', { autoAlpha: 0, y: 24, filter: 'blur(8px)', duration: 0.56, clearProps: 'filter,transform' }, '-=0.12')
       .from('.theory-section', {
         autoAlpha: 0,
         y: 26,
@@ -214,7 +214,7 @@ export default function TheorySlide({ slide }) {
         transformOrigin: '50% 0%',
         stagger: { each: 0.07, from: 'start' },
         duration: 0.5,
-        clearProps: 'filter,transform,visibility',
+        clearProps: 'all',
       }, '-=0.22')
   }, { scope: slideRef, dependencies: [slide.id], revertOnUpdate: true })
 
