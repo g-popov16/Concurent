@@ -210,8 +210,6 @@ export default function TheorySlide({ slide }) {
       .from('.theory-section', {
         autoAlpha: 0,
         y: 26,
-        rotationX: -5,
-        transformOrigin: '50% 0%',
         stagger: { each: 0.07, from: 'start' },
         duration: 0.5,
         clearProps: 'all',
