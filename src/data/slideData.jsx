@@ -37,20 +37,37 @@ export const slides = [
     sections: [
       {
         type: 'text',
-        text: 'Thread-овете в един процес споделят обща памет. Когато два thread-а четат и пишат в един адрес без координация, редът на операциите зависи от scheduler-а — не от кода.'
+        text: 'Thread-овете в един процес споделят обща памет. Когато два thread-а четат и пишат в един адрес без координация, редът на операциите зависи от scheduler-а — не от кода.',
       },
       {
         type: 'callout',
-        label: 'Пример',
-        text: 'T1 чете counter = 0, T2 чете counter = 0. T1 записва 1. T2 записва 1. Резултат: 1 вместо 2.',
+        label: 'Класически race condition',
+        text: 'T1 чете counter = 0, T2 чете counter = 0. T1 записва 1. T2 записва 1. Краен резултат: 1 вместо 2. Едното инкрементиране изчезва — детерминизмът на програмата е нарушен.',
       },
       {
-        type: 'text',
-        text: 'Аналогия от живота: двама колеги редактират един Excel файл без споделен достъп. Ако запишат по едно и също време, едното запазване заличава другото.'
+        type: 'scenario-list',
+        items: [
+          {
+            icon: '📄',
+            title: 'Изгубено записване',
+            text: 'Двама колеги редактират един Excel файл. Ако запишат едновременно, едното запазване заличава другото.',
+          },
+          {
+            icon: '🔀',
+            title: 'Непоследователно четене',
+            text: 'Thread A чете структура докато Thread B я модифицира — частично старо, частично ново данни.',
+          },
+          {
+            icon: '💀',
+            title: 'Deadlock',
+            text: 'T1 чака T2 да освободи ресурс A, T2 чака T1 да освободи ресурс B. Никой не продължава.',
+          },
+        ],
       },
       {
-        type: 'text',
-        text: 'Синхронизацията дава на thread-овете начин да се разберат кой работи кога. Без нея резултатът от паралелен код е недетерминиран.'
+        type: 'callout',
+        label: 'Решението',
+        text: 'Синхронизацията дава на thread-овете механизъм да се координират: кой влиза в критичната секция, кога чака и кога продължава. lock, Mutex, Semaphore, AutoResetEvent — всички решават части от този проблем.',
       },
     ],
     speakerNotes: 'Нека кажем на учениците да се сетят за последния път, когато двама са редактирали едновременно. Race condition е точно това — само на ниво регистри. Ще го покажем интерактивно на следващия слайд.',
@@ -578,25 +595,29 @@ var existing = EventWaitHandle.OpenExisting("Global\\\\MyEvent");`,
     sections: [
       {
         type: 'text',
-        text: 'AutoResetEvent работи като турникет. Всяко Set() пуска точно един чакащ thread. След като thread-ът мине, портата автоматично се затваря.'
+        text: 'AutoResetEvent работи като турникет: всяко Set() пуска точно един чакащ thread. След като thread-ът мине, портата автоматично се затваря — без допълнително извикване.',
       },
       {
         type: 'visual-metaphor',
         metaphor: 'turnstile',
         items: [
-          { state: 'Несигнализиран', color: '#e8622a', desc: 'Всички thread-ове блокират при WaitOne()' },
-          { state: 'Set() извикан', color: '#c9922a', desc: 'Точно един thread преминава' },
-          { state: 'Auto Reset', color: '#3ec88a', desc: 'Портата се затваря — без допълнителен Reset()' },
-        ]
+          { state: 'Несигнализиран', color: '#e8622a', desc: 'Всички thread-ове блокират при WaitOne(). Опашка се формира.' },
+          { state: 'Set() извикан', color: '#c9922a', desc: 'Точно един thread от опашката преминава и продължава.' },
+          { state: 'Auto Reset', color: '#3ec88a', desc: 'Портата се затваря автоматично. Следващият thread чака.' },
+        ],
       },
       {
-        type: 'text',
-        text: 'Ако Set() се извика без да има чакащи thread-ове, сигналът се запазва. Следващото WaitOne() ще мине без изчакване.'
+        type: 'list',
+        items: [
+          'Set() без чакащ thread — сигналът се запазва: следващото WaitOne() минава незабавно',
+          'Многократни Set() без WaitOne() — само ЕДИН сигнал се запазва; останалите се губят',
+          'N threads в опашка + N Set()-вания = всеки thread минава точно веднъж',
+        ],
       },
       {
         type: 'callout',
         label: 'Типична употреба',
-        text: 'Producer-consumer: producer генерира едно задание, Set() събужда точно един consumer. Броят Set()-вания = брой преминали thread-ове.',
+        text: 'Producer-consumer: producer генерира задание и вика Set(), consumer чака с WaitOne(). Броят Set()-вания = брой преминали thread-ове. Перфектно за работни опашки.',
       },
     ],
     speakerNotes: 'Турникетът е добра метафора. Покажете с ръце ако трябва: едно натискане = един пасаж, после затваряне.',
@@ -639,6 +660,20 @@ foreach (var item in GetItems())
         type: 'text',
         text: 'Забелязвай: lock защитава queue-то (in-process), а AutoResetEvent сигнализира за ново задание. Двете примитиви решават различни проблеми.'
       },
+      {
+        type: 'list',
+        items: [
+          'AutoResetEvent(false) — стартира несигнализиран; consumer блокира веднага при WaitOne()',
+          'Enqueue → Set() е редът: данните трябва да са в queue-то преди сигнала',
+          'lock(lockObj) пази Queue<T> от race condition — AutoResetEvent само сигнализира',
+          'Ако producer е по-бърз: всяко Set() отключва точно един WaitOne() — не се губят сигнали',
+        ]
+      },
+      {
+        type: 'callout',
+        label: 'В реален код',
+        text: 'BlockingCollection<T> или Channel<T> обединяват AutoResetEvent и lock в един thread-safe тип. Използвай ги вместо ръчен lock + event в production код.',
+      },
     ],
     speakerNotes: 'Подчертайте: dataReady.Set() и lock(lockObj) правят различни неща. Set() е сигнал, lock е mutex за queue-то. В реален код вероятно бихте използвали BlockingCollection<T>, но тук показваме принципа.',
   },
@@ -656,21 +691,29 @@ foreach (var item in GetItems())
     sections: [
       {
         type: 'text',
-        text: 'ManualResetEvent работи като светофар. Един Set() отваря портата за ВСИЧКИ чакащи thread-ове. Портата остава отворена до следващото Reset().'
+        text: 'ManualResetEvent работи като светофар. Един Set() отваря портата за ВСИЧКИ чакащи thread-ове едновременно. Портата остава отворена до следващото Reset().',
       },
       {
         type: 'visual-metaphor',
         metaphor: 'traffic',
         items: [
-          { state: 'Reset() — червено', color: '#e8622a', desc: 'Всички thread-ове блокират при WaitOne()' },
-          { state: 'Set() — зелено', color: '#3ec88a', desc: 'Всички чакащи и бъдещи thread-ове минават' },
-          { state: 'Reset() отново', color: '#e8622a', desc: 'Портата се затваря — нов WaitOne() ще блокира' },
-        ]
+          { state: 'Reset() — червено', color: '#e8622a', desc: 'Всички thread-ове блокират при WaitOne(). Чакат зелено.' },
+          { state: 'Set() — зелено', color: '#3ec88a', desc: 'Всички чакащи и всички бъдещи WaitOne() минават незабавно.' },
+          { state: 'Reset() отново', color: '#e8622a', desc: 'Портата се затваря ръчно. Нов WaitOne() ще блокира.' },
+        ],
+      },
+      {
+        type: 'list',
+        items: [
+          'Set() без чакащи — следващите WaitOne() ще минат незабавно (портата е отворена)',
+          'Разлика с Auto: Manual не ресетва след WaitOne(); ресет изисква изричен Reset()',
+          'Ако Reset() и Set() се викат конкурентно, нов thread може или не може да мине',
+        ],
       },
       {
         type: 'callout',
         label: 'Типична употреба',
-        text: 'Initialization barrier: много worker thread-ове чакат конфигурацията да се зареди. Един Set() стартира всички едновременно.',
+        text: 'Initialization barrier: 10 worker thread-а чакат базата данни да се свърже. LoadConfiguration() завършва → Set() → всички 10 стартират едновременно.',
       },
     ],
     speakerNotes: 'Разликата с Auto: при Manual, Set() е broadcast — всички минават. При Auto, Set() е unicast — само един минава. Следващата игра показва тази разлика директно.',
@@ -710,6 +753,20 @@ initialized.Reset();      // затвори отново`,
       {
         type: 'text',
         text: 'След Set(), ManualResetEvent остава сигнализиран. Всяко следващо WaitOne() ще мине без изчакване докато не се извика Reset().'
+      },
+      {
+        type: 'list',
+        items: [
+          'ManualResetEvent(false) — несигнализиран старт; всички worker-и чакат при WaitOne()',
+          'Set() е broadcast: събужда всичките 5 worker-а едновременно с едно извикване',
+          'Нов thread след Set() ще премине незабавно — "портата" е отворена за всеки',
+          'Reset() е необходим само ако трябва ново блокиране; без него е едноцикличен barrier',
+        ]
+      },
+      {
+        type: 'callout',
+        label: 'Auto vs Manual',
+        text: 'AutoResetEvent: Set() пуска ЕДИН thread, затваря се. ManualResetEvent: Set() пуска ВСИЧКИ, остава отворен. Изборът зависи от броя thread-ове, които трябва да стартират.',
       },
     ],
     speakerNotes: 'Initialization barrier е класически pattern. Без ManualResetEvent би трябвало да използвате CountdownEvent или Barrier — но те са по-сложни.',
